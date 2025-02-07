@@ -34,7 +34,7 @@ library(GGally)
 library(mgcv)
 library(visreg)
 
-setwd('E:\\ResearchProject\\Najmul Bhai\\Dengue\\Dengue Climate Change 2023')
+setwd('E:\\ResearchProject\\Najmul Bhai\\Dengue\\Dengue Trend 2024')
 Dengue <- read.csv("DengueAndWeatherDataRough2.csv")
 
 #Descriptive
@@ -71,24 +71,26 @@ YearwiseDD
 colnames(YearwiseCFR) <- c("Year","CFR")
 YearwiseCFR
 
-df2 <- data.frame(Dengue=rep(c("Cases", "Deaths"), each=24),
+df2 <- data.frame(Dengue=rep(c("Cases", "Deaths"), each=25),
                   Years=rep(c(YearwiseDC$Year),2),
-                  Numbers=c(YearwiseDC$DC,YearwiseDD$DD)+1)
+                  Numbers=c(YearwiseDC$DC,YearwiseDD$DD))
 
-# Change the colors manually
-p <- ggplot(data=df2, aes(x=Years, y=Numbers, fill=Dengue)) + scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
-                                                                         labels = trans_format("log10", math_format(10^.x))) + 
+p <- ggplot(data=df2, aes(x=Years, y=Numbers+1, fill=Dengue, label = Numbers)) + scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                                                                            labels = trans_format("log10", math_format(10^.x))) +
   geom_bar(position="dodge", stat="identity")+
-  theme_minimal()+  theme_bw() +
+  geom_text(aes(label=Numbers), position=position_dodge(width=0.9), vjust=0.5, hjust=ifelse(df2$Numbers==0, 0, 1), angle=90)+
+  theme_minimal()+  theme_bw() + ylab("Numbers")+
   theme( legend.title=element_blank(),
-         legend.text = element_text(color = "Black", size = 25), legend.position = c(0.1, 0.9),
+         legend.text = element_text(color = "Black", size = 25), legend.position = c(0.1, 0.85),
          text = element_text(size = 25))
-
-# Use custom colors
-p + scale_fill_manual(values=c('#999999','#E69F00'))
 # Use brewer color palettes
 p<- p + scale_fill_brewer(palette="Dark2") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 p
+
+
+tiff("DCM.tiff", units="in", width=10, height=6, res=300)
+gridExtra::grid.arrange(p)
+dev.off()
 
 
 monthwiseDC <- aggregate(Dengue$DC, by=list(Category=Dengue$Month), FUN=mean)
@@ -103,15 +105,15 @@ monthwiseDD
 df2 <- data.frame(Dengue=rep(c("Cases", "Deaths"), each=12),
                   Months=rep(c(monthwiseDC$Category),2),
                   Numbers=c(monthwiseDC$x,
-                            monthwiseDD$x)+1)
+                            monthwiseDD$x))
 
 
 # Change the colors manually
-q <- ggplot(data=df2, aes(x=Months, y=Numbers, fill=Dengue)) + scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+q <- ggplot(data=df2, aes(x=Months, y=Numbers+1, fill=Dengue, label = Numbers)) + scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                                                                          labels = trans_format("log10", math_format(10^.x))) +
   geom_bar(position="dodge", stat="identity")+
-  
-  theme_minimal() + theme_bw() +
+  geom_text(aes(label=Numbers), position=position_dodge(width=0.9), vjust=0.5, hjust=ifelse(df2$Numbers<=1, 0, 1), angle=90)+
+  theme_minimal()+  theme_bw() + ylab("Numbers")+
   theme( legend.title=element_blank(),
          legend.text = element_text(color = "Black", size = 25), legend.position = c(0.1, 0.9),
          text = element_text(size = 25)) +
@@ -130,6 +132,13 @@ q + scale_fill_manual(values=c('#999999','#E69F00'))
 # Use brewer color palettes
 q <- q + scale_fill_brewer(palette="Dark2")+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 q
+
+
+tiff("DDM.tiff", units="in", width=10, height=6, res=300)
+gridExtra::grid.arrange(q)
+dev.off()
+
+
 
 tiff("DCDDM.tiff", units="in", width=12, height=13, res=300)
 
