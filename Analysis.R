@@ -78,27 +78,27 @@ df2 <- data.frame(Dengue=rep(c("Cases", "Deaths"), each=25),
 p <- ggplot(data=df2, aes(x=Years, y=Numbers+1, fill=Dengue, label = Numbers)) + scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                                                                             labels = trans_format("log10", math_format(10^.x))) +
   geom_bar(position="dodge", stat="identity")+
-  geom_text(aes(label=Numbers), position=position_dodge(width=0.9), vjust=0.5, hjust=ifelse(df2$Numbers==0, 0, 1), angle=90)+
+  geom_text(aes(label=Numbers), position=position_dodge(width=0.9), vjust=0.5, hjust=ifelse(df2$Numbers==0, 0, -0.1), angle=90)+
   theme_minimal()+  theme_bw() + ylab("Numbers")+
   theme( legend.title=element_blank(),
          legend.text = element_text(color = "Black", size = 25), legend.position = c(0.1, 0.85),
          text = element_text(size = 25))
 # Use brewer color palettes
-p<- p + scale_fill_brewer(palette="Dark2") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+p<- p + scale_fill_brewer(palette="Paired") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 p
 
 
-tiff("DCM.tiff", units="in", width=10, height=6, res=300)
+tiff("DCM.tiff", units="in", width=18, height=15, res=300)
 gridExtra::grid.arrange(p)
 dev.off()
 
 
-monthwiseDC <- aggregate(Dengue$DC, by=list(Category=Dengue$Month), FUN=mean)
+monthwiseDC <- aggregate(Dengue$DC, by=list(Category=Dengue$Month), FUN=sum)
 monthwiseDC
 
 Dengue$DD[is.na(Dengue$DD)] <- 0
 
-monthwiseDD <- aggregate(Dengue$DD, by=list(Category=Dengue$Month), FUN=mean)
+monthwiseDD <- aggregate(Dengue$DD, by=list(Category=Dengue$Month), FUN=sum)
 monthwiseDD
 
 
@@ -112,7 +112,7 @@ df2 <- data.frame(Dengue=rep(c("Cases", "Deaths"), each=12),
 q <- ggplot(data=df2, aes(x=Months, y=Numbers+1, fill=Dengue, label = Numbers)) + scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
                                                                          labels = trans_format("log10", math_format(10^.x))) +
   geom_bar(position="dodge", stat="identity")+
-  geom_text(aes(label=Numbers), position=position_dodge(width=0.9), vjust=0.5, hjust=ifelse(df2$Numbers<=1, 0, 1), angle=90)+
+  geom_text(aes(label=Numbers), position=position_dodge(width=0.9), vjust=0.5, hjust=ifelse(df2$Numbers<=1, 0, -0.1), angle=90)+
   theme_minimal()+  theme_bw() + ylab("Numbers")+
   theme( legend.title=element_blank(),
          legend.text = element_text(color = "Black", size = 25), legend.position = c(0.1, 0.9),
@@ -130,11 +130,11 @@ q <- ggplot(data=df2, aes(x=Months, y=Numbers+1, fill=Dengue, label = Numbers)) 
 # Use custom colors
 q + scale_fill_manual(values=c('#999999','#E69F00'))
 # Use brewer color palettes
-q <- q + scale_fill_brewer(palette="Dark2")+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+q <- q + scale_fill_brewer(palette="Paired")+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 q
 
 
-tiff("DDM.tiff", units="in", width=10, height=6, res=300)
+tiff("DDM.tiff", units="in", width=18, height=15, res=300)
 gridExtra::grid.arrange(q)
 dev.off()
 
